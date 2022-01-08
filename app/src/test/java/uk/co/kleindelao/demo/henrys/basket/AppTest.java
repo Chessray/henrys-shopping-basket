@@ -4,11 +4,14 @@
 package uk.co.kleindelao.demo.henrys.basket;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.assertj.core.api.BDDAssertions.then;
 
 class AppTest {
-    @Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    private final App app = new App();
+
+    @Test
+    void shouldHaveACatalogue() {
+        then(app.getCatalogue()).isNotNull();
     }
 }

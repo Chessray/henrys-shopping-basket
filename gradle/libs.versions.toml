@@ -1,9 +1,11 @@
 [versions]
+assertj = "3.22.0"
 buildTimeTracker = "3.0.1"
 guava = "31.0.1-jre"
 jupiter = "5.8.2"
 
 [libraries]
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiter" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "jupiter" }

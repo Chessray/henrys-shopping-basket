@@ -3,12 +3,23 @@
  */
 package uk.co.kleindelao.demo.henrys.basket;
 
+import com.google.common.annotations.VisibleForTesting;
+
+import java.util.Set;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+    private final Catalogue catalogue;
+
+    public App() {
+        catalogue = new Catalogue(Set.of());
+    }
+
+    @VisibleForTesting
+    Catalogue getCatalogue() {
+        return catalogue;
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+
     }
 }
