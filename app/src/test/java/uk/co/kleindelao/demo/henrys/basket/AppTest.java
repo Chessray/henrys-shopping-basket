@@ -14,4 +14,9 @@ class AppTest {
     void shouldHaveACatalogue() {
         then(app.getCatalogue()).isNotNull();
     }
+
+    @Test
+    void shouldHaveNonEmptyCatalogue() {
+        then(app.getCatalogue()).isNotEmpty();
+    }
 }

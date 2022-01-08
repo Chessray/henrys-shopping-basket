@@ -5,13 +5,14 @@ package uk.co.kleindelao.demo.henrys.basket;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 public class App {
     private final Catalogue catalogue;
 
     public App() {
-        catalogue = new Catalogue(Set.of());
+        catalogue = new Catalogue(Set.of(new ShoppingItem("soup", "tin", new BigDecimal("0.65"))));
     }
 
     @VisibleForTesting
