@@ -4,6 +4,8 @@
 
 package uk.co.kleindelao.demo.henrys.basket;
 
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
 import static java.util.Map.entry;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -64,6 +66,37 @@ class ShoppingProcessTest {
       then(shoppingProcess.getBasket()
                           .getContent()).containsOnly(
           entry(new ShoppingItem("bread", "loaf", new BigDecimal("0.8")), numberOfItems));
+    }
+  }
+
+  @Nested
+  class Total {
+    @Test
+    void shouldAddUpToZeroForEmptyBasket() {
+      // When
+      final var total = shoppingProcess.getTotalPrice();
+
+      // Then
+      then(total).isEqualTo(ZERO.setScale(2, HALF_UP));
+    }
+
+    @Test
+    void shouldAddIndividualPricesForUndiscountedItems() {
+      // Given
+      final var numberOfBreads = nextInt(1, 10);
+      final var numberOfMilks = nextInt(1, 10);
+      shoppingProcess.addItems(1, numberOfBreads);
+      shoppingProcess.addItems(2, numberOfMilks);
+
+      // When
+      final var total = shoppingProcess.getTotalPrice();
+
+      // Then
+      then(total).hasScaleOf(2)
+                 .isEqualTo(new BigDecimal("0.8").multiply(BigDecimal.valueOf(numberOfBreads))
+                                                 .add(new BigDecimal("1.3").multiply(
+                                                     BigDecimal.valueOf(numberOfMilks)))
+                                                 .setScale(2, HALF_UP));
     }
   }
 }

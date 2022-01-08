@@ -2,13 +2,10 @@ package uk.co.kleindelao.demo.henrys.basket;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
-import static java.math.BigDecimal.ZERO;
-import static java.math.RoundingMode.HALF_UP;
 import static java.util.Map.entry;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.math.BigDecimal;
 import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -71,36 +68,31 @@ class ShoppingBasketTest {
   }
 
   @Nested
-  class Total {
+  class GetNumberOfItems {
     @Test
-    void shouldAddUpToZeroForEmptyBasket() {
+    void shouldReturnNumberOfItemsForKnownShoppingItem() {
+      // Given
+      final var item = new ShoppingItem(RandomString.make(), RandomString.make(), ONE);
+      final var expectedNumberOfItems = nextInt(1, 10);
+      shoppingBasket.addItems(expectedNumberOfItems, item);
+
       // When
-      final var total = shoppingBasket.getTotalPrice();
+      final var actualNumberOfItems = shoppingBasket.getNumberOfItems(item);
 
       // Then
-      then(total).isEqualTo(ZERO.setScale(2, HALF_UP));
+      then(actualNumberOfItems).isEqualTo(expectedNumberOfItems);
     }
 
     @Test
-    void shouldAddIndividualPricesForUndiscountedItems() {
+    void shouldReturn0ForUnknownShoppingItem() {
       // Given
-      final var itemPrice1 = ONE;
-      final var item1 = new ShoppingItem(RandomString.make(), RandomString.make(), itemPrice1);
-      final var numberOfItems1 = nextInt(1, 10);
-      final var itemPrice2 = TEN;
-      final var item2 = new ShoppingItem(RandomString.make(), RandomString.make(), itemPrice2);
-      final var numberOfItems2 = nextInt(1, 10);
-      shoppingBasket.addItems(numberOfItems1, item1);
-      shoppingBasket.addItems(numberOfItems2, item2);
+      final var item = new ShoppingItem(RandomString.make(), RandomString.make(), ONE);
 
       // When
-      final var total = shoppingBasket.getTotalPrice();
+      final var actualNumberOfItems = shoppingBasket.getNumberOfItems(item);
 
       // Then
-      then(total).hasScaleOf(2)
-                 .isEqualTo(itemPrice1.multiply(BigDecimal.valueOf(numberOfItems1))
-                                      .add(itemPrice2.multiply(BigDecimal.valueOf(numberOfItems2)))
-                                      .setScale(2, HALF_UP));
+      then(actualNumberOfItems).isEqualTo(0);
     }
   }
 }
