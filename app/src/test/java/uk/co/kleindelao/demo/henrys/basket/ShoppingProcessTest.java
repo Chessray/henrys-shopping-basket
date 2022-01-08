@@ -11,92 +11,184 @@ import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class ShoppingProcessTest {
-  private final ShoppingProcess shoppingProcess = new ShoppingProcess(LocalDate.now());
-
   @Nested
-  class CatalogueTests {
-    @Test
-    void shouldHaveACatalogue() {
-      then(shoppingProcess.getCatalogue()).isNotNull();
+  class AppleDiscount {
+    @Nested
+    class WithinDateRange {
+      @Test
+      void shouldApplyWhenInAFewDays() {
+        // Given
+        final var shoppingProcess = new ShoppingProcess(LocalDate.now()
+                                                                 .plusDays(5));
+        shoppingProcess.addItems(3, 5);
+
+        // When
+        final var actualTotal = shoppingProcess.getTotalPrice();
+
+        // Then
+        then(actualTotal).isEqualTo(new BigDecimal("0.45"));
+      }
+
+      @Test
+      void shouldApplyWhenInRangeDuringShortMonth() {
+        // Given
+        final var fixedClockBeforeJanuaryEnd =
+            Clock.fixed(LocalDate.of(2022, 1, 30)
+                                 .atStartOfDay(ZoneId.systemDefault())
+                                 .toInstant(), ZoneId.systemDefault());
+        final var shoppingProcess = new ShoppingProcess(fixedClockBeforeJanuaryEnd,
+            LocalDate.of(2022, 2, 4));
+        shoppingProcess.addItems(3, 5);
+
+        // When
+        final var actualTotal = shoppingProcess.getTotalPrice();
+
+        // Then
+        then(actualTotal).isEqualTo(new BigDecimal("0.45"));
+      }
+
+      @Test
+      void shouldApplyOnLastDayOfMonthFollowingStartDate() {
+        // Given
+        final var fixedClockBeforeMonthEnd =
+            Clock.fixed(LocalDate.of(2022, 7, 30)
+                                 .atStartOfDay(ZoneId.systemDefault())
+                                 .toInstant(), ZoneId.systemDefault());
+        final var shoppingProcess = new ShoppingProcess(fixedClockBeforeMonthEnd,
+            LocalDate.of(2022, 9, 30));
+        shoppingProcess.addItems(3, 5);
+
+        // When
+        final var actualTotal = shoppingProcess.getTotalPrice();
+
+        // Then
+        then(actualTotal).isEqualTo(new BigDecimal("0.45"));
+      }
     }
 
-    @Test
-    void shouldHaveNonEmptyCatalogue() {
-      then(shoppingProcess.getCatalogue()).isNotEmpty();
-    }
+    @Nested
+    class OutsideDateRange {
+      @Test
+      void shouldNotApplyWhenBeforeDateRange() {
+        // Given
+        final ShoppingProcess shoppingProcess = new ShoppingProcess(LocalDate.now());
+        shoppingProcess.addItems(3, 5);
 
-    @Test
-    void shouldContainSoupBreadMilkApples() {
-      then(
-          shoppingProcess.getCatalogue()).anySatisfy(
-                                             item -> itemMatches(item, "soup", "tin", "0.65"))
-                                         .anySatisfy(
-                                             item -> itemMatches(item, "bread", "loaf", "0.8"))
-                                         .anySatisfy(
-                                             item -> itemMatches(item, "milk", "bottle", "1.3"))
-                                         .anySatisfy(
-                                             item -> itemMatches(item, "apples", "single", "0.1"));
-    }
+        // When
+        final var actualTotal = shoppingProcess.getTotalPrice();
 
-    private void itemMatches(final ShoppingItem item, final String expectedName,
-                             final String expectedUnit,
-                             final String expectedCostValue) {
-      then(item.name()).isEqualTo(expectedName);
-      then(item.unit()).isEqualTo(expectedUnit);
-      then(item.cost()).isEqualTo(new BigDecimal(expectedCostValue));
+        // Then
+        then(actualTotal).isEqualTo(new BigDecimal("0.50"));
+      }
+
+      @Test
+      void shouldNotApplyAfterDateRange() {
+        // Given
+        final ShoppingProcess shoppingProcess = new ShoppingProcess(LocalDate.now()
+                                                                             .plusMonths(3));
+        shoppingProcess.addItems(3, 5);
+
+        // When
+        final var actualTotal = shoppingProcess.getTotalPrice();
+
+        // Then
+        then(actualTotal).isEqualTo(new BigDecimal("0.50"));
+      }
     }
   }
 
   @Nested
-  class BasketTests {
-    @Test
-    void shouldAddItemsByIndex() {
-      // Given
-      final var numberOfItems = nextInt(1, 10);
+  class DateIndependentTest {
+    private final ShoppingProcess shoppingProcess = new ShoppingProcess(LocalDate.now());
 
-      // When
-      shoppingProcess.addItems(1, numberOfItems);
+    @Nested
+    class CatalogueTests {
+      @Test
+      void shouldHaveACatalogue() {
+        then(shoppingProcess.getCatalogue()).isNotNull();
+      }
 
-      // Then
-      then(shoppingProcess.getBasket()
-                          .getContent()).containsOnly(
-          entry(new ShoppingItem("bread", "loaf", new BigDecimal("0.8")), numberOfItems));
+      @Test
+      void shouldHaveNonEmptyCatalogue() {
+        then(shoppingProcess.getCatalogue()).isNotEmpty();
+      }
+
+      @Test
+      void shouldContainSoupBreadMilkApples() {
+        then(
+            shoppingProcess.getCatalogue()).anySatisfy(
+                                               item -> itemMatches(item, "soup", "tin", "0.65"))
+                                           .anySatisfy(
+                                               item -> itemMatches(item, "bread", "loaf", "0.8"))
+                                           .anySatisfy(
+                                               item -> itemMatches(item, "milk", "bottle", "1.3"))
+                                           .anySatisfy(
+                                               item -> itemMatches(item, "apples", "single",
+                                                   "0.1"));
+      }
+
+      private void itemMatches(final ShoppingItem item, final String expectedName,
+                               final String expectedUnit,
+                               final String expectedCostValue) {
+        then(item.name()).isEqualTo(expectedName);
+        then(item.unit()).isEqualTo(expectedUnit);
+        then(item.cost()).isEqualTo(new BigDecimal(expectedCostValue));
+      }
     }
-  }
 
-  @Nested
-  class Total {
-    @Test
-    void shouldAddUpToZeroForEmptyBasket() {
-      // When
-      final var total = shoppingProcess.getTotalPrice();
+    @Nested
+    class BasketTests {
+      @Test
+      void shouldAddItemsByIndex() {
+        // Given
+        final var numberOfItems = nextInt(1, 10);
 
-      // Then
-      then(total).isEqualTo(ZERO.setScale(2, HALF_UP));
+        // When
+        shoppingProcess.addItems(1, numberOfItems);
+
+        // Then
+        then(shoppingProcess.getBasket()
+                            .getContent()).containsOnly(
+            entry(new ShoppingItem("bread", "loaf", new BigDecimal("0.8")), numberOfItems));
+      }
     }
 
-    @Test
-    void shouldAddIndividualPricesForUndiscountedItems() {
-      // Given
-      final var numberOfBreads = nextInt(1, 10);
-      final var numberOfMilks = nextInt(1, 10);
-      shoppingProcess.addItems(1, numberOfBreads);
-      shoppingProcess.addItems(2, numberOfMilks);
+    @Nested
+    class Total {
+      @Test
+      void shouldAddUpToZeroForEmptyBasket() {
+        // When
+        final var total = shoppingProcess.getTotalPrice();
 
-      // When
-      final var total = shoppingProcess.getTotalPrice();
+        // Then
+        then(total).isEqualTo(ZERO.setScale(2, HALF_UP));
+      }
 
-      // Then
-      then(total).hasScaleOf(2)
-                 .isEqualTo(new BigDecimal("0.8").multiply(BigDecimal.valueOf(numberOfBreads))
-                                                 .add(new BigDecimal("1.3").multiply(
-                                                     BigDecimal.valueOf(numberOfMilks)))
-                                                 .setScale(2, HALF_UP));
+      @Test
+      void shouldAddIndividualPricesForUndiscountedItems() {
+        // Given
+        final var numberOfBreads = nextInt(1, 10);
+        final var numberOfMilks = nextInt(1, 10);
+        shoppingProcess.addItems(1, numberOfBreads);
+        shoppingProcess.addItems(2, numberOfMilks);
+
+        // When
+        final var total = shoppingProcess.getTotalPrice();
+
+        // Then
+        then(total).hasScaleOf(2)
+                   .isEqualTo(new BigDecimal("0.8").multiply(BigDecimal.valueOf(numberOfBreads))
+                                                   .add(new BigDecimal("1.3").multiply(
+                                                       BigDecimal.valueOf(numberOfMilks)))
+                                                   .setScale(2, HALF_UP));
+      }
     }
   }
 }
