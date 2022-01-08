@@ -17,6 +17,7 @@ public class ShoppingBasket {
   }
 
   public void addItems(final int numberOfItems, final ShoppingItem item) {
-    content.put(item, numberOfItems);
+    content.computeIfPresent(item, (itemKey, currentCount) -> currentCount + numberOfItems);
+    content.putIfAbsent(item, numberOfItems);
   }
 }
