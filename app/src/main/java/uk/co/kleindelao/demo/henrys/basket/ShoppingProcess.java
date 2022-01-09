@@ -2,6 +2,10 @@ package uk.co.kleindelao.demo.henrys.basket;
 
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_UP;
+import static uk.co.kleindelao.demo.henrys.basket.ShoppingUnits.BOTTLE;
+import static uk.co.kleindelao.demo.henrys.basket.ShoppingUnits.LOAF;
+import static uk.co.kleindelao.demo.henrys.basket.ShoppingUnits.SINGLE;
+import static uk.co.kleindelao.demo.henrys.basket.ShoppingUnits.TIN;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Range;
@@ -12,6 +16,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 public class ShoppingProcess {
+  private static final BigDecimal APPLE_DISCOUNT_MULTIPLICAND = new BigDecimal("0.9");
+  private static final BigDecimal SOUP_BREAD_DISCOUNT_DIVISOR = BigDecimal.valueOf(2);
+
   private final Catalogue catalogue;
   private final ShoppingItem soup;
   private final ShoppingItem bread;
@@ -34,12 +41,12 @@ public class ShoppingProcess {
                                     .contains(shoppingDate);
     this.isAppleDiscount = determineIsAppleDiscount(clock, shoppingDate);
     this.basket = new ShoppingBasket();
-    soup = shoppingItem("soup", "tin", "0.65");
-    bread = shoppingItem("bread", "loaf", "0.8");
-    apples = shoppingItem("apples", "single", "0.1");
+    soup = shoppingItem("soup", TIN, "0.65");
+    bread = shoppingItem("bread", LOAF, "0.8");
+    apples = shoppingItem("apples", SINGLE, "0.1");
     catalogue = new Catalogue(
         List.of(soup, bread,
-            shoppingItem("milk", "bottle", "1.3"), apples));
+            shoppingItem("milk", BOTTLE, "1.3"), apples));
   }
 
   private boolean determineIsAppleDiscount(final Clock clock, final LocalDate shoppingDate) {
@@ -58,14 +65,16 @@ public class ShoppingProcess {
     return new ShoppingItem(name, unit, new BigDecimal(costValue));
   }
 
-  @VisibleForTesting
   Catalogue getCatalogue() {
     return catalogue;
   }
 
-  @VisibleForTesting
   ShoppingBasket getBasket() {
     return basket;
+  }
+
+  public ShoppingItem getCatalogueItem(final int index) {
+    return catalogue.getItem(index);
   }
 
   public void addItems(final int catalogueIndex, final int numberOfItems) {
@@ -100,7 +109,7 @@ public class ShoppingProcess {
     return entry.getKey()
                 .cost()
                 .multiply(BigDecimal.valueOf(numberOfDiscountedBreads))
-                .divide(BigDecimal.valueOf(2), HALF_UP)
+                .divide(SOUP_BREAD_DISCOUNT_DIVISOR, HALF_UP)
                 .add(entry.getKey()
                           .cost()
                           .multiply(
@@ -110,8 +119,17 @@ public class ShoppingProcess {
   private BigDecimal itemMultiplier(final Entry<ShoppingItem, Integer> entry) {
     var multiplier = BigDecimal.valueOf(entry.getValue());
     if (isAppleDiscount && apples.equals(entry.getKey())) {
-      multiplier = multiplier.multiply(new BigDecimal("0.9"));
+      multiplier = multiplier.multiply(APPLE_DISCOUNT_MULTIPLICAND);
     }
     return multiplier;
+  }
+
+  @Override
+  public String toString() {
+    return "ShoppingProcess{" +
+        "catalogue=" + catalogue +
+        ", isAppleDiscount=" + isAppleDiscount +
+        ", isSoupBreadDiscount=" + isSoupBreadDiscount +
+        '}';
   }
 }
