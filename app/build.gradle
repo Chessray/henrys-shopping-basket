@@ -10,25 +10,14 @@ repositories {
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation libs
-            .bundles
-            .junit
-            .jupiter
-    testImplementation libs
-            .assertj
-            .core
-    testImplementation libs
-            .system
-            .lambda
+    testImplementation libs.bundles.junit.jupiter
+    testImplementation libs.assertj.core
+    testImplementation libs.system.lambda
 
     // This dependency is used by the application.
-    implementation libs
-            .commons
-            .lang3
-    implementation libs
-            .guava
-    implementation libs
-            .inflector
+    implementation libs.commons.lang3
+    implementation libs.guava
+    implementation libs.inflector
 }
 
 application {
@@ -38,19 +27,15 @@ application {
 
 java {
     toolchain {
-        languageVersion
-                .set(JavaLanguageVersion
-                        .of(17))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
 run {
-    standardInput = System
-            .in
+    standardInput = System.in
 }
 
-tasks
-        .named('test') {
-            // Use JUnit Platform for unit tests.
-            useJUnitPlatform()
-        }
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}

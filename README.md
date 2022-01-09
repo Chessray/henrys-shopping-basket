@@ -12,5 +12,13 @@ Start the application with `./gradlew run`.
 
 ## Usage
 
-The command line interaction guides you through building the shopping basket. Currently, you can only build one basket per run and only add new entries to this one.
-You add items via first entering the index number as displayed and then the number of units you wish to buy.
+The command line interaction guides you through building the shopping basket. Currently, you can only build one basket
+per run and only add new entries to this one.
+
+### Adding a shopping item to the basket
+
+1. Enter `a` or `A` in order to trigger the process of adding.
+2. Enter the index number of the good you wish to buy as displayed.
+3. Enter the number of units you wish to buy.
+4. Repeat until you have collected all the items you wish to buy. Your final price will already be shown as "Current
+   total".
