@@ -23,7 +23,7 @@ class ShoppingBasketTest {
     @Test
     void shouldAddEntryForNewItem() {
       // Given
-      final var item = new ShoppingItem(RandomString.make(), RandomString.make(), ONE);
+      final var item = new CatalogueItem(RandomString.make(), RandomString.make(), ONE);
       final var numberOfItems = nextInt(1, 10);
 
       // When
@@ -36,7 +36,7 @@ class ShoppingBasketTest {
     @Test
     void shouldSumUpTwoEntriesForSameItem() {
       // Given
-      final var item = new ShoppingItem(RandomString.make(), RandomString.make(), ONE);
+      final var item = new CatalogueItem(RandomString.make(), RandomString.make(), ONE);
       final var initialNumberOfItems = nextInt(1, 10);
       final var addedNumberOfItems = nextInt(1, 10);
       shoppingBasket.addItems(initialNumberOfItems, item);
@@ -52,9 +52,9 @@ class ShoppingBasketTest {
     @Test
     void shouldStoreDifferentItems() {
       // Given
-      final var item1 = new ShoppingItem(RandomString.make(), RandomString.make(), ONE);
+      final var item1 = new CatalogueItem(RandomString.make(), RandomString.make(), ONE);
       final var numberOfItems1 = nextInt(1, 10);
-      final var item2 = new ShoppingItem(RandomString.make(), RandomString.make(), TEN);
+      final var item2 = new CatalogueItem(RandomString.make(), RandomString.make(), TEN);
       final var numberOfItems2 = nextInt(1, 10);
       shoppingBasket.addItems(numberOfItems1, item1);
 
@@ -72,7 +72,7 @@ class ShoppingBasketTest {
     @Test
     void shouldReturnNumberOfItemsForKnownShoppingItem() {
       // Given
-      final var item = new ShoppingItem(RandomString.make(), RandomString.make(), ONE);
+      final var item = new CatalogueItem(RandomString.make(), RandomString.make(), ONE);
       final var expectedNumberOfItems = nextInt(1, 10);
       shoppingBasket.addItems(expectedNumberOfItems, item);
 
@@ -86,7 +86,7 @@ class ShoppingBasketTest {
     @Test
     void shouldReturn0ForUnknownShoppingItem() {
       // Given
-      final var item = new ShoppingItem(RandomString.make(), RandomString.make(), ONE);
+      final var item = new CatalogueItem(RandomString.make(), RandomString.make(), ONE);
 
       // When
       final var actualNumberOfItems = shoppingBasket.getNumberOfItems(item);

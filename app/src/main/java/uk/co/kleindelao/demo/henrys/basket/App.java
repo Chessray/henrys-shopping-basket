@@ -50,7 +50,7 @@ public class App {
     System.out.println("Would you please enter the shopping date (format yyyyMMdd)?");
   }
 
-  private String plural(final ShoppingItem catalogueItem) {
+  private String plural(final CatalogueItem catalogueItem) {
     // https://github.com/atteo/evo-inflector/issues/25
     return henrysEnglish.getPlural(catalogueItem.unit());
   }

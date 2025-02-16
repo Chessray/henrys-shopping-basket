@@ -20,9 +20,9 @@ public class ShoppingProcess {
   private static final BigDecimal SOUP_BREAD_DISCOUNT_DIVISOR = BigDecimal.valueOf(2);
 
   private final Catalogue catalogue;
-  private final ShoppingItem soup;
-  private final ShoppingItem bread;
-  private final ShoppingItem apples;
+  private final CatalogueItem soup;
+  private final CatalogueItem bread;
+  private final CatalogueItem apples;
   private final ShoppingBasket basket;
   private final boolean isAppleDiscount;
   private final boolean isSoupBreadDiscount;
@@ -39,30 +39,19 @@ public class ShoppingProcess {
                                         LocalDate.now(clock)
                                                  .plusDays(6))
                                     .contains(shoppingDate);
-    this.isAppleDiscount = determineIsAppleDiscount(clock, shoppingDate);
+    this.isAppleDiscount = IsAppleDiscount.determineIsAppleDiscount(clock, shoppingDate);
     this.basket = new ShoppingBasket();
-    soup = shoppingItem("soup", TIN, "0.65");
-    bread = shoppingItem("bread", LOAF, "0.8");
-    apples = shoppingItem("apples", SINGLE, "0.1");
+    soup = catalogueItem("soup", TIN, "0.65");
+    bread = catalogueItem("bread", LOAF, "0.8");
+    apples = catalogueItem("apples", SINGLE, "0.1");
     catalogue = new Catalogue(
         List.of(soup, bread,
-            shoppingItem("milk", BOTTLE, "1.3"), apples));
+            catalogueItem("milk", BOTTLE, "1.3"), apples));
   }
 
-  private boolean determineIsAppleDiscount(final Clock clock, final LocalDate shoppingDate) {
-    final var appleDiscountStartDate = LocalDate.now(clock)
-                                                .plusDays(3);
-    final var appleDiscountEndDate = LocalDate.of(appleDiscountStartDate.getYear(),
-                                                  appleDiscountStartDate.getMonthValue() + 2, 1)
-                                              .minusDays(1);
-    final Range<LocalDate> appleDiscountRange = Range.closed(appleDiscountStartDate,
-        appleDiscountEndDate);
-    return appleDiscountRange.contains(shoppingDate);
-  }
-
-  private static ShoppingItem shoppingItem(final String name, final String unit,
-                                           final String costValue) {
-    return new ShoppingItem(name, unit, new BigDecimal(costValue));
+  private static CatalogueItem catalogueItem(final String name, final String unit,
+                                             final String costValue) {
+    return new CatalogueItem(name, unit, new BigDecimal(costValue));
   }
 
   Catalogue getCatalogue() {
@@ -73,7 +62,7 @@ public class ShoppingProcess {
     return basket;
   }
 
-  public ShoppingItem getCatalogueItem(final int index) {
+  public CatalogueItem getCatalogueItem(final int index) {
     return catalogue.getItem(index);
   }
 
@@ -91,18 +80,18 @@ public class ShoppingProcess {
                  .setScale(2, HALF_UP);
   }
 
-  private BigDecimal toItemPrice(final Entry<ShoppingItem, Integer> entry) {
+  private BigDecimal toItemPrice(final Entry<CatalogueItem, Integer> entry) {
     return isSoupBreadDiscount && bread.equals(entry.getKey()) ?
         calculateBreadSumWithSoupDiscount(entry) : calculateItemPrice(entry);
   }
 
-  private BigDecimal calculateItemPrice(final Entry<ShoppingItem, Integer> entry) {
+  private BigDecimal calculateItemPrice(final Entry<CatalogueItem, Integer> entry) {
     return entry.getKey()
                 .cost()
                 .multiply(itemMultiplier(entry));
   }
 
-  private BigDecimal calculateBreadSumWithSoupDiscount(final Entry<ShoppingItem, Integer> entry) {
+  private BigDecimal calculateBreadSumWithSoupDiscount(final Entry<CatalogueItem, Integer> entry) {
     final var numberOfBreads = entry.getValue();
     final var numberOfDiscountedBreads = Math.min(basket.getNumberOfItems(soup) / 2,
         numberOfBreads);
@@ -116,7 +105,7 @@ public class ShoppingProcess {
                               BigDecimal.valueOf(numberOfBreads - numberOfDiscountedBreads)));
   }
 
-  private BigDecimal itemMultiplier(final Entry<ShoppingItem, Integer> entry) {
+  private BigDecimal itemMultiplier(final Entry<CatalogueItem, Integer> entry) {
     var multiplier = BigDecimal.valueOf(entry.getValue());
     if (isAppleDiscount && apples.equals(entry.getKey())) {
       multiplier = multiplier.multiply(APPLE_DISCOUNT_MULTIPLICAND);
