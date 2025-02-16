@@ -194,7 +194,7 @@ class ShoppingProcessTest {
                                                    "0.1"));
       }
 
-      private void itemMatches(final ShoppingItem item, final String expectedName,
+      private void itemMatches(final CatalogueItem item, final String expectedName,
                                final String expectedUnit,
                                final String expectedCostValue) {
         then(item.name()).isEqualTo(expectedName);
@@ -216,7 +216,7 @@ class ShoppingProcessTest {
         // Then
         then(shoppingProcess.getBasket()
                             .getContent()).containsOnly(
-            entry(new ShoppingItem("bread", "loaf", new BigDecimal("0.8")), numberOfItems));
+            entry(new CatalogueItem("bread", "loaf", new BigDecimal("0.8")), numberOfItems));
       }
     }
 

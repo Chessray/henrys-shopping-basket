@@ -5,13 +5,13 @@ import static java.util.stream.Collectors.joining;
 import java.util.Iterator;
 import java.util.List;
 
-public record Catalogue(List<ShoppingItem> availableItems) implements Iterable<ShoppingItem> {
+public record Catalogue(List<CatalogueItem> availableItems) implements Iterable<CatalogueItem> {
   @Override
-  public Iterator<ShoppingItem> iterator() {
+  public Iterator<CatalogueItem> iterator() {
     return availableItems().iterator();
   }
 
-  public ShoppingItem getItem(final int index) {
+  public CatalogueItem getItem(final int index) {
     return availableItems().get(index);
   }
 

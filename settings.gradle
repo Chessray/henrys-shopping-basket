@@ -9,5 +9,3 @@
 
 rootProject.name = 'henrys-shopping-basket'
 include('app')
-
-enableFeaturePreview("VERSION_CATALOGS")
