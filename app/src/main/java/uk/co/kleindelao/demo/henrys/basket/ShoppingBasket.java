@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShoppingBasket {
-  private final Map<ShoppingItem, Integer> content;
+  private final Map<CatalogueItem, Integer> content;
   private final HenrysEnglish henrysEnglish;
 
   public ShoppingBasket() {
@@ -14,16 +14,16 @@ public class ShoppingBasket {
     henrysEnglish = new HenrysEnglish();
   }
 
-  Map<ShoppingItem, Integer> getContent() {
+  Map<CatalogueItem, Integer> getContent() {
     return content;
   }
 
-  public void addItems(final int numberOfItems, final ShoppingItem item) {
+  public void addItems(final int numberOfItems, final CatalogueItem item) {
     content.computeIfPresent(item, (itemKey, currentCount) -> currentCount + numberOfItems);
     content.putIfAbsent(item, numberOfItems);
   }
 
-  public int getNumberOfItems(final ShoppingItem item) {
+  public int getNumberOfItems(final CatalogueItem item) {
     return content.getOrDefault(item, 0);
   }
 
@@ -35,7 +35,7 @@ public class ShoppingBasket {
                                         .collect(joining("\n"));
   }
 
-  private String toOutputItem(final Map.Entry<ShoppingItem, Integer> shoppingEntry) {
+  private String toOutputItem(final Map.Entry<CatalogueItem, Integer> shoppingEntry) {
     return shoppingEntry.getValue() + " " +
         henrysEnglish.getPlural(shoppingEntry.getKey()
                                              .unit(), shoppingEntry.getValue()) + " of " +
