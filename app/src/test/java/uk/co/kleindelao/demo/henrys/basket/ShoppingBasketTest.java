@@ -6,7 +6,7 @@ import static java.util.Map.entry;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.assertj.core.internal.bytebuddy.utility.RandomString;
+import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

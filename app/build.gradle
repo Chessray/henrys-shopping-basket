@@ -12,6 +12,7 @@ dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation libs.bundles.junit.jupiter
     testImplementation libs.assertj.core
+    testImplementation libs.bytebuddy
     testImplementation libs.system.lambda
 
     // This dependency is used by the application.
