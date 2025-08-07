@@ -1,5 +1,5 @@
 [versions]
-assertj = "3.27.3"
+assertj = "3.27.4"
 buildTimeTracker = "5.0.1"
 guava = "33.4.8-jre"
 inflector = "1.3"
