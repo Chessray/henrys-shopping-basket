@@ -8,11 +8,12 @@ public class IsAppleDiscount {
   static boolean determineIsAppleDiscount(final Clock clock, final LocalDate shoppingDate) {
     final var appleDiscountStartDate = LocalDate.now(clock)
                                                 .plusDays(3);
-    final var appleDiscountEndDate = LocalDate.of(appleDiscountStartDate.getYear(),
-                                                  appleDiscountStartDate.getMonthValue() + 2, 1)
-                                              .minusDays(1);
+
+    final var appleDiscountEndDate = appleDiscountStartDate.plusMonths(2)
+                                                           .withDayOfMonth(1)
+                                                           .minusDays(1);
     final Range<LocalDate> appleDiscountRange = Range.closed(appleDiscountStartDate,
-        appleDiscountEndDate);
+                                                             appleDiscountEndDate);
     return appleDiscountRange.contains(shoppingDate);
   }
 }
